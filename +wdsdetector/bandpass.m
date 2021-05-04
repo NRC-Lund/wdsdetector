@@ -24,6 +24,11 @@ validateattributes(fs, 'numeric', {'scalar' 'positive'})
 % Default values:
 if fs/2<32
     passband = [8 fs/2.01]; % Has to be less than the Nyquist frequency.
+    if passband(1)>=passband(2)
+        passband(1) = passband(2)*0.75;
+    end
+    warning(sprintf('The default passband was changed to [%0.2f %0.2f].', ...
+        passband(1), passband(2)))
 else
     passband = [8 32];
 end
@@ -48,6 +53,9 @@ end
 % Check filter frequency:
 if passband(2)*2>fs
     error('The upper limit of the passband must be less than half the sample rate.')
+end
+if passband(1)>=passband(2)
+    error('The lower limit of the passband must be lower than the upper limit.')
 end
 
 % Calculate the filter coefficients:
